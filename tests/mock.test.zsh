@@ -81,6 +81,22 @@ test_do_something_using_parameters() {
     assertEquals "hello" "$actual"
 }
 
+test_do_returns_status_code_ok() {
+    mock myFunction
+
+    myFunction
+
+    assertEquals "0" "$?"
+}
+
+test_do_returns_status_code_ko() {
+    mock myFunction do 'return 1'
+
+    myFunction
+
+    assertEquals "1" "$?"
+}
+
 test_if_params_are_ok_do_something() {
     mock myFunction if "greetings" do "echo hello"
 

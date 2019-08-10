@@ -59,6 +59,7 @@ __mock_create() {
         __mock_must $mockedFunction \$@ || return
         __mock_if $mockedFunction \$@ || return
         __mock_do $mockedFunction \$@
+        return \$?
     }
     """
     return
@@ -66,14 +67,17 @@ __mock_create() {
 
 __mock_do() {
     local mockedFunction="$1"
-    local dos=$__mocks_dos["$mockedFunction"]
     shift
 
-    eval """
-    __execute$mockedFunction() { $__mocks_dos["$mockedFunction"] }
-    __execute$mockedFunction $@
-    unset -f __execute$mockedFunction
-    """;
+    (
+        local function __execute() { 
+            eval $__mocks_dos["$mockedFunction"]
+        }
+        __execute $@
+    )
+    local exitStatus=$?
+
+    return $exitStatus
 }
 
 __mock_if() {
