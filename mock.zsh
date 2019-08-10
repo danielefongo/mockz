@@ -1,7 +1,7 @@
 typeset -gA __mocks_functions=()
 typeset -gA __mocks_invocations=()
 typeset -gA __mocks_old_functions=()
-typeset -gA __mocks_musts=()
+typeset -gA __mocks_expectations=()
 typeset -gA __mocks_ifs=()
 typeset -gA __mocks_dos=()
 
@@ -25,7 +25,7 @@ mock() {
         shift; shift;
 
         case "$command" in
-            must) __mocks_musts["$mockedFunction"]="$params";;
+            expect) __mocks_expectations["$mockedFunction"]="$params";;
             if) __mocks_ifs["$mockedFunction"]="$params";;
             do) __mocks_dos["$mockedFunction"]="$params";;
             called) __mock_check_invocations $mockedFunction "$params" || return 1;;
@@ -46,7 +46,7 @@ rock() {
     [ "$__mocks_invocations["$mockedFunction"]}" != 0 ] && __mocks_invocations["$mockedFunction"]=""
     [ "$__mocks_dos["$mockedFunction"]" ] && __mocks_dos["$mockedFunction"]=""
     [ "$__mocks_ifs["$mockedFunction"]" ] && __mocks_ifs["$mockedFunction"]=""
-    [ "$__mocks_musts["$mockedFunction"]" ] && __mocks_musts["$mockedFunction"]=""
+    [ "$__mocks_expectations["$mockedFunction"]" ] && __mocks_expectations["$mockedFunction"]=""
 }
 
 __mock_create() {
@@ -98,7 +98,7 @@ __mock_must() {
     local mockedFunction="$2"
     shift; shift
 
-    __mock_check_equality "$__mocks_musts["$mockedFunction"]" "$@"
+    __mock_check_equality "$__mocks_expectations["$mockedFunction"]" "$@"
     if [ $? != 0 ]; then
         kill -s USR1 $parentPid
         return 1 

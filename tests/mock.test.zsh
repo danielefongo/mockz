@@ -14,7 +14,7 @@ tearDown() {
     __mocks_functions=()
     __mocks_dos=()
     __mocks_ifs=()
-    __mocks_musts=()
+    __mocks_expectations=()
 }
 
 # Tests
@@ -34,7 +34,7 @@ test_delete_mocks() {
     assertNull "__mocks_functions nope" "$__mocks_functions[\"myFunction\"]"
     assertNull "__mocks_invocations nope" "$__mocks_invocations[\"myFunction\"]"
     assertNull "__mocks_old_functions nope" "$__mocks_old_functions[\"myFunction\"]"
-    assertNull "__mocks_musts nope" "$__mocks_musts[\"myFunction\"]"
+    assertNull "__mocks_expectations nope" "$__mocks_expectations[\"myFunction\"]"
     assertNull "__mocks_ifs nope" "$__mocks_ifs[\"myFunction\"]"
     assertNull "__mocks_dos nope" "$__mocks_dos[\"myFunction\"]"
 }
@@ -102,7 +102,7 @@ test_failure_should_rise_on_async_jobs() {
     failFunction() {failCalled=true;}
     mock_fail_function=failFunction
 
-    mock myFunction must 'expected'
+    mock myFunction expect 'expected'
 
     myFunction &!
 
@@ -127,31 +127,31 @@ test_if_params_are_wrong_do_nothing() {
     assertEquals "" "$actual"
 }
 
-test_must_do_something_with_right_params() {
-    mock mustFunction must "greetings yeah" do "echo hello"
+test_expect_do_something_with_right_params() {
+    mock mustFunction expect "greetings yeah" do "echo hello"
 
     local actual=$(mustFunction greetings yeah)
 
     assertEquals "hello" "$actual"
 }
 
-test_must_fails_with_wrong_params() {
+test_expect_fails_with_wrong_params() {
     local failCalled
     failFunction() {failCalled=true;}
     mock_fail_function=failFunction
 
-    mock mustFunction must "greetings yeah"
+    mock mustFunction expect "greetings yeah"
 
     mustFunction greetings
 
     assertTrue "$failCalled"
 }
 
-test_must_do_nothing_with_wrong_params() {
+test_expect_do_nothing_with_wrong_params() {
     failFunction() {;}
     mock_fail_function=failFunction
 
-    mock mustFunction must "greetings yeah" do "echo hello"
+    mock mustFunction expect "greetings yeah" do "echo hello"
 
     local actual=$(mustFunction greetings)
     
