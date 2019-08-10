@@ -33,14 +33,15 @@ mock() {
 
 rock() {
     local mockedFunction="$1"
-    
-    [ "$__mocks_invocations[$mockedFunction]" ] && __mocks_musts[$mockedFunction]=()
-    [ "$__mocks_functions[$mockedFunction]" ] && __mocks_functions[$mockedFunction]=()
-    [ "$__mocks_dos[$mockedFunction]" ] && __mocks_dos[$mockedFunction]=()
-    [ "$__mocks_ifs[$mockedFunction]" ] && __mocks_ifs[$mockedFunction]=()
-    [ "$__mocks_musts[$mockedFunction]" ] && __mocks_musts[$mockedFunction]=()
 
     eval "$__mocks_old_functions["$mockedFunction"]"
+
+    [ "$__mocks_functions["$mockedFunction"]" ] && __mocks_functions["$mockedFunction"]=""
+    [ "$__mocks_old_functions["$mockedFunction"]" ] && __mocks_old_functions["$mockedFunction"]=""
+    [ "$__mocks_invocations["$mockedFunction"]}" != 0 ] && __mocks_invocations["$mockedFunction"]=""
+    [ "$__mocks_dos["$mockedFunction"]" ] && __mocks_dos["$mockedFunction"]=""
+    [ "$__mocks_ifs["$mockedFunction"]" ] && __mocks_ifs["$mockedFunction"]=""
+    [ "$__mocks_musts["$mockedFunction"]" ] && __mocks_musts["$mockedFunction"]=""
 }
 
 __mock_create() {

@@ -21,10 +21,9 @@ tearDown() {
 
 test_create_mocks() {
     mock myFunction
-    mock myFunction2
 
     assertEquals "myFunction" "$__mocks_functions[\"myFunction\"]"
-    assertEquals "myFunction2" "$__mocks_functions[\"myFunction2\"]"
+    assertEquals "0" "$__mocks_invocations[\"myFunction\"]"
 }
 
 test_delete_mocks() {
@@ -32,7 +31,12 @@ test_delete_mocks() {
 
     rock myFunction
 
-    assertNull "$__mocks_functions[\"myFunction\"]"
+    assertNull "__mocks_functions nope" "$__mocks_functions[\"myFunction\"]"
+    assertNull "__mocks_invocations nope" "$__mocks_invocations[\"myFunction\"]"
+    assertNull "__mocks_old_functions nope" "$__mocks_old_functions[\"myFunction\"]"
+    assertNull "__mocks_musts nope" "$__mocks_musts[\"myFunction\"]"
+    assertNull "__mocks_ifs nope" "$__mocks_ifs[\"myFunction\"]"
+    assertNull "__mocks_dos nope" "$__mocks_dos[\"myFunction\"]"
 }
 
 test_delete_mock_restores_the_old_functionality() {
