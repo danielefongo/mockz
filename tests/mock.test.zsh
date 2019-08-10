@@ -32,7 +32,7 @@ test_delete_mocks() {
 
     rock myFunction
 
-    assertNull "$__mocks_functions[\"myFunction2\"]"
+    assertNull "$__mocks_functions[\"myFunction\"]"
 }
 
 test_delete_mock_restores_the_old_functionality() {
@@ -80,6 +80,7 @@ test_must_do_something_with_right_params() {
 }
 
 test_must_fails_with_wrong_params() {
+    local failCalled
     failFunction() {failCalled=true;}
     mock_fail_function=failFunction
 
@@ -91,7 +92,7 @@ test_must_fails_with_wrong_params() {
 }
 
 test_must_do_nothing_with_wrong_params() {
-    failFunction() {failCalled=true;}
+    failFunction() {;}
     mock_fail_function=failFunction
 
     mock mustFunction must "greetings yeah" do "echo hello"
@@ -100,6 +101,25 @@ test_must_do_nothing_with_wrong_params() {
     
     assertEquals "" "$actual"
     mock_fail_function=fail
+}
+
+test_called_the_right_number_of_times() {
+    mock myFunction
+
+    myFunction
+    myFunction
+
+    mock myFunction called 2
+}
+
+test_called_the_wrong_number_of_times() {
+    failFunction() {failCalled=true;}
+    mock_fail_function=failFunction
+
+    mock myFunction
+
+    mock myFunction called 1
+    [ $? != 0 ] || fail
 }
 
 # Run

@@ -1,11 +1,11 @@
-typeset -gA __mocks_functions
-typeset -gA __mocks_old_functions
-typeset -gA __mocks_musts
-typeset -gA __mocks_ifs
-typeset -gA __mocks_dos
+typeset -gA __mocks_functions=()
+typeset -gA __mocks_invocations=()
+typeset -gA __mocks_old_functions=()
+typeset -gA __mocks_musts=()
+typeset -gA __mocks_ifs=()
+typeset -gA __mocks_dos=()
 
 mock_fail_function=fail
-mock_equals_function=assertEquals
 
 mock() {
     local mockedFunction=$1
@@ -23,6 +23,7 @@ mock() {
             must) __mocks_musts["$mockedFunction"]="$params";;
             if) __mocks_ifs["$mockedFunction"]="$params";;
             do) __mocks_dos["$mockedFunction"]="$params";;
+            called) __mock_check_invocations $mockedFunction "$params" || return 1;;
             *) return;;
         esac
 
@@ -32,6 +33,8 @@ mock() {
 
 rock() {
     local mockedFunction="$1"
+    
+    [ "$__mocks_invocations[$mockedFunction]" ] && __mocks_musts[$mockedFunction]=()
     [ "$__mocks_functions[$mockedFunction]" ] && __mocks_functions[$mockedFunction]=()
     [ "$__mocks_dos[$mockedFunction]" ] && __mocks_dos[$mockedFunction]=()
     [ "$__mocks_ifs[$mockedFunction]" ] && __mocks_ifs[$mockedFunction]=()
@@ -44,10 +47,12 @@ __mock_create() {
     local mockedFunction="$1"
 
     __mocks_old_functions["$mockedFunction"]=$(declare -f $mockedFunction)
+    __mocks_invocations["$mockedFunction"]=0
 
     eval """
     $mockedFunction()
     {
+        (( __mocks_invocations[\"$mockedFunction\"] = __mocks_invocations[\"$mockedFunction\"] + 1 ));
         __mock_must $mockedFunction \$@ || return
         __mock_if $mockedFunction \$@ || return
         __mock_do $mockedFunction
@@ -66,7 +71,7 @@ __mock_if() {
     local mockedFunction="$1"
     shift
 
-    __mock_check_params "$__mocks_ifs["$mockedFunction"]" "$@"
+    __mock_check_equality "$__mocks_ifs["$mockedFunction"]" "$@"
     [ $? = 0 ] || return 1 
 }
 
@@ -74,23 +79,34 @@ __mock_must() {
     local mockedFunction="$1"
     shift
 
-    __mock_check_params "$__mocks_musts["$mockedFunction"]" "$@"
+    __mock_check_equality "$__mocks_musts["$mockedFunction"]" "$@"
     if [ $? != 0 ]; then
         $mock_fail_function
         return 1 
     fi
 }
 
-__mock_check_params() {
-    local expectedParams="$1"
+__mock_check_invocations() {
+    local mockedFunction="$1"
     shift
-    local actualParams="$(echo $@)"
 
-    if [ -z "$expectedParams" ]; then
+    __mock_check_equality "$__mocks_invocations["$mockedFunction"]" "$@"
+    if [ $? != 0 ]; then
+        $mock_fail_function
+        return 1 
+    fi
+}
+
+__mock_check_equality() {
+    local expected="$1"
+    shift
+    local actual="$(echo $@)"
+
+    if [ -z "$expected" ]; then
         return
     fi
 
-    if [ "$actualParams" != "$expectedParams" ]; then
+    if [ "$actual" != "$expected" ]; then
         return 1 
     fi
 }
