@@ -36,6 +36,13 @@ mock() {
     fi
 }
 
+rockall() {
+    for mockedFunction in $__mocks_functions
+    do
+        rock $mockedFunction
+    done
+}
+
 rock() {
     local mockedFunction="$1"
 
