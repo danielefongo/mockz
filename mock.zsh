@@ -14,26 +14,24 @@ trap '__USR1' USR1
 
 mock() {
     local mockedFunction=$1
-    __mocks_functions["$mockedFunction"]="$mockedFunction"
     shift
 
-    if [ "$#" -eq 0 ]; then
-        __mock_create $mockedFunction
-    else
-        local command=$1
-        local params="$2"
-        shift; shift;
+    (( $# % 2 != 0 )) && echo "wrong number of parameters" && return 1
+    (( $# == 0 )) && __mock_create $mockedFunction && return 1
 
-        case "$command" in
-            expect) __mocks_expectations["$mockedFunction"]="$params";;
-            if) __mocks_ifs["$mockedFunction"]="$params";;
-            do) __mocks_dos["$mockedFunction"]="$params";;
-            called) __mock_check_invocations $mockedFunction "$params" || return 1;;
-            *) return;;
-        esac
+    local command=$1
+    local params="$2"
+    shift; shift;
 
-        mock $mockedFunction "$@"
-    fi
+    case "$command" in
+        expect) __mocks_expectations["$mockedFunction"]="$params";;
+        if) __mocks_ifs["$mockedFunction"]="$params";;
+        do) __mocks_dos["$mockedFunction"]="$params";;
+        called) __mock_check_invocations $mockedFunction "$params" || return 1;;
+        *) echo "wrong command $command"; return 1;;
+    esac
+
+    mock $mockedFunction "$@"
 }
 
 rockall() {
@@ -58,6 +56,8 @@ rock() {
 
 __mock_create() {
     local mockedFunction="$1"
+    
+    __mocks_functions["$mockedFunction"]="$mockedFunction"
 
     if [ ! "$__mocks_old_functions["$mockedFunction"]" ]; then
         __mocks_old_functions["$mockedFunction"]=$(declare -f $mockedFunction)

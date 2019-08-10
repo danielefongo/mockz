@@ -26,6 +26,20 @@ test_create_mocks() {
     assertEquals "0" "$__mocks_invocations[\"myFunction\"]"
 }
 
+test_do_not_create_mock_with_wrong_command() {
+    mock myFunction wtf hello 1>/dev/null
+
+    assertEquals "1" "$?"
+    assertNull "$__mocks_functions[\"myFunction\"]"
+}
+
+test_do_not_create_mock_with_wrong_number_of_params() {
+    mock myFunction do 1>/dev/null
+
+    assertEquals "1" "$?"
+    assertNull "$__mocks_functions[\"myFunction\"]"
+}
+
 test_delete_mock() {
     mock myFunction
 
