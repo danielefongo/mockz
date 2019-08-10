@@ -67,14 +67,18 @@ __mock_create() {
     eval """
     $mockedFunction()
     {
-        (( __mocks_invocations[\"$mockedFunction\"] = __mocks_invocations[\"$mockedFunction\"] + 1 ));
-        __mock_must $$ $mockedFunction \$@ || return
+        __mock_invocations $mockedFunction
+        __mock_expect $$ $mockedFunction \$@ || return
         __mock_if $mockedFunction \$@ || return
         __mock_do $mockedFunction \$@
         return \$?
     }
     """
     return
+}
+
+__mock_invocations() {
+    __mocks_invocations["$mockedFunction"]=$((__mocks_invocations["$mockedFunction"] + 1 ))
 }
 
 __mock_do() {
@@ -100,7 +104,7 @@ __mock_if() {
     [ $? = 0 ] || return 1 
 }
 
-__mock_must() {
+__mock_expect() {
     local parentPid=$1
     local mockedFunction="$2"
     shift; shift

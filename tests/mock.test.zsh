@@ -138,9 +138,9 @@ test_if_params_are_wrong_do_nothing() {
 }
 
 test_expect_do_something_with_right_params() {
-    mock mustFunction expect "greetings yeah" do "echo hello"
+    mock expectFunction expect "greetings yeah" do "echo hello"
 
-    local actual=$(mustFunction greetings yeah)
+    local actual=$(expectFunction greetings yeah)
 
     assertEquals "hello" "$actual"
 }
@@ -150,9 +150,9 @@ test_expect_fails_with_wrong_params() {
     failFunction() {failCalled=true;}
     mock_fail_function=failFunction
 
-    mock mustFunction expect "greetings yeah"
+    mock expectFunction expect "greetings yeah"
 
-    mustFunction greetings
+    expectFunction greetings
 
     assertTrue "$failCalled"
 }
@@ -161,9 +161,9 @@ test_expect_do_nothing_with_wrong_params() {
     failFunction() {;}
     mock_fail_function=failFunction
 
-    mock mustFunction expect "greetings yeah" do "echo hello"
+    mock expectFunction expect "greetings yeah" do "echo hello"
 
-    local actual=$(mustFunction greetings)
+    local actual=$(expectFunction greetings)
     
     assertEquals "" "$actual"
     mock_fail_function=fail
