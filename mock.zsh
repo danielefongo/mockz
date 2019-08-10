@@ -58,7 +58,7 @@ __mock_create() {
         (( __mocks_invocations[\"$mockedFunction\"] = __mocks_invocations[\"$mockedFunction\"] + 1 ));
         __mock_must $mockedFunction \$@ || return
         __mock_if $mockedFunction \$@ || return
-        __mock_do $mockedFunction
+        __mock_do $mockedFunction \$@
     }
     """
     return
@@ -67,7 +67,13 @@ __mock_create() {
 __mock_do() {
     local mockedFunction="$1"
     local dos=$__mocks_dos["$mockedFunction"]
-    eval "$__mocks_dos["$mockedFunction"]";
+    shift
+
+    eval """
+    __execute$mockedFunction() { $__mocks_dos["$mockedFunction"] }
+    __execute$mockedFunction $@
+    unset -f __execute$mockedFunction
+    """;
 }
 
 __mock_if() {
