@@ -5,7 +5,7 @@
 setopt shwordsplit
 SHUNIT_PARENT=$0
 
-oneTimeSetUp() {  
+setUp() {  
   source mock.zsh
 }
 
@@ -35,10 +35,22 @@ test_delete_mocks() {
     assertNull "$__mocks_functions[\"myFunction2\"]"
 }
 
+test_delete_mock_restores_the_old_functionality() {
+    local function sampleFunction() {
+        echo "hello"
+    }
+
+    mock sampleFunction do "echo wtf"
+    rock sampleFunction
+
+    local actual=$(sampleFunction)
+    assertEquals "hello" "$actual"
+}
+
 test_mock_do_something() {
     mock myFunction do "echo hello"
 
-    actual=$(myFunction)
+    local actual=$(myFunction)
 
     assertEquals "hello" "$actual"
 }
@@ -46,7 +58,7 @@ test_mock_do_something() {
 test_mock_if_params_do_something() {
     mock myFunction if "greetings" do "echo hello"
 
-    actual=$(myFunction greetings)
+    local actual=$(myFunction greetings)
 
     assertEquals "hello" "$actual"
 }
@@ -54,7 +66,7 @@ test_mock_if_params_do_something() {
 test_mock_if_params_wrong_do_nothing() {
     mock ifFunction if "greetings" do "echo hello"
 
-    actual=$(ifFunction)
+    local actual=$(ifFunction)
 
     assertEquals "" "$actual"
 }
@@ -80,7 +92,7 @@ test_mock_fails_with_wrong_params_should_dont_do_anything() {
 
     mock mustFunction must "greetings yeah" do "echo hello"
 
-    actual=$(mustFunction greetings)
+    local actual=$(mustFunction greetings)
     
     assertEquals "" "$actual"
     mock_fail_function=fail
@@ -89,10 +101,11 @@ test_mock_fails_with_wrong_params_should_dont_do_anything() {
 test_mock_ok_with_right_params() {
     mock mustFunction must "greetings yeah" do "echo hello"
 
-    actual=$(mustFunction greetings yeah)
+    local actual=$(mustFunction greetings yeah)
 
     assertEquals "hello" "$actual"
 }
+
 
 # Run
 

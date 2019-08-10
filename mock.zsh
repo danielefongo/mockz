@@ -1,4 +1,5 @@
 typeset -gA __mocks_functions
+typeset -gA __mocks_old_functions
 typeset -gA __mocks_musts
 typeset -gA __mocks_ifs
 typeset -gA __mocks_dos
@@ -35,9 +36,15 @@ rock() {
     [ "$__mocks_dos[$mockedFunction]" ] && __mocks_dos[$mockedFunction]=()
     [ "$__mocks_ifs[$mockedFunction]" ] && __mocks_ifs[$mockedFunction]=()
     [ "$__mocks_musts[$mockedFunction]" ] && __mocks_musts[$mockedFunction]=()
+
+    eval "$__mocks_old_functions["$mockedFunction"]"
 }
 
 __mock_create() {
+    local mockedFunction="$1"
+
+    __mocks_old_functions["$mockedFunction"]=$(declare -f $mockedFunction)
+
     eval """
     $mockedFunction()
     {
@@ -59,7 +66,7 @@ __mock_if() {
     local mockedFunction="$1"
     shift
 
-    __mock_check_params "$__mocks_ifs[\"$mockedFunction\"]" "$@"
+    __mock_check_params "$__mocks_ifs["$mockedFunction"]" "$@"
     [ $? = 0 ] || return 1 
 }
 
@@ -67,7 +74,7 @@ __mock_must() {
     local mockedFunction="$1"
     shift
 
-    __mock_check_params "$__mocks_musts[\"$mockedFunction\"]" "$@"
+    __mock_check_params "$__mocks_musts["$mockedFunction"]" "$@"
     if [ $? != 0 ]; then
         $mock_fail_function
         return 1 

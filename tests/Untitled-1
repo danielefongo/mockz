@@ -1,0 +1,25 @@
+
+__mock_called() {
+    local mockedFunction=$1
+    local times="$2"
+
+    eval """
+    $mockedFunction()
+    {
+        (( __mocks_invocations[\"$mockedFunction\"] = __mocks_invocations[\"$mockedFunction\"] + 1 ));
+    }
+    """
+}
+
+mock_calls() {
+    mockedFunction=$1
+
+    echo $__mocks_invocations["$mockedFunction"]
+}
+
+verify_mock_calls() {
+    mockedFunction=$1
+
+    local invocations=$__mocks_invocations["$mockedFunction"]
+    $mock_equals_function "wrong number of invocations for $mockedFunction" "$2" "$invocations"
+}
