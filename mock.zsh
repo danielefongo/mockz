@@ -47,7 +47,9 @@ rock() {
 __mock_create() {
     local mockedFunction="$1"
 
-    __mocks_old_functions["$mockedFunction"]=$(declare -f $mockedFunction)
+    if [ ! "$__mocks_old_functions["$mockedFunction"]" ]; then
+        __mocks_old_functions["$mockedFunction"]=$(declare -f $mockedFunction)
+    fi
     __mocks_invocations["$mockedFunction"]=0
 
     eval """

@@ -51,6 +51,20 @@ test_delete_mock_restores_the_old_functionality() {
     assertEquals "hello" "$actual"
 }
 
+test_defining_mock_multiple_times_does_not_override_old_functionality() {
+    local function sampleFunction() {
+        echo "hello"
+    }
+
+    mock sampleFunction do "echo wtf"
+    mock sampleFunction do "echo wtf"
+    
+    rock sampleFunction
+
+    local actual=$(sampleFunction)
+    assertEquals "hello" "$actual"
+}
+
 test_do_something() {
     mock myFunction do "echo hello"
 
