@@ -97,6 +97,20 @@ test_do_returns_status_code_ko() {
     assertEquals "1" "$?"
 }
 
+test_failure_should_rise_on_async_jobs() {
+    local failCalled
+    failFunction() {failCalled=true;}
+    mock_fail_function=failFunction
+
+    mock myFunction must 'expected'
+
+    myFunction &!
+
+    sleep 0.1
+
+    assertTrue "$failCalled"
+}
+
 test_if_params_are_ok_do_something() {
     mock myFunction if "greetings" do "echo hello"
 

@@ -7,6 +7,11 @@ typeset -gA __mocks_dos=()
 
 mock_fail_function=fail
 
+function __USR1() {
+    $mock_fail_function
+}
+trap '__USR1' USR1
+
 mock() {
     local mockedFunction=$1
     __mocks_functions["$mockedFunction"]="$mockedFunction"
@@ -56,7 +61,7 @@ __mock_create() {
     $mockedFunction()
     {
         (( __mocks_invocations[\"$mockedFunction\"] = __mocks_invocations[\"$mockedFunction\"] + 1 ));
-        __mock_must $mockedFunction \$@ || return
+        __mock_must $$ $mockedFunction \$@ || return
         __mock_if $mockedFunction \$@ || return
         __mock_do $mockedFunction \$@
         return \$?
@@ -89,12 +94,13 @@ __mock_if() {
 }
 
 __mock_must() {
-    local mockedFunction="$1"
-    shift
+    local parentPid=$1
+    local mockedFunction="$2"
+    shift; shift
 
     __mock_check_equality "$__mocks_musts["$mockedFunction"]" "$@"
     if [ $? != 0 ]; then
-        $mock_fail_function
+        kill -s USR1 $parentPid
         return 1 
     fi
 }
