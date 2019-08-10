@@ -47,7 +47,7 @@ test_delete_mock_restores_the_old_functionality() {
     assertEquals "hello" "$actual"
 }
 
-test_mock_do_something() {
+test_do_something() {
     mock myFunction do "echo hello"
 
     local actual=$(myFunction)
@@ -55,7 +55,7 @@ test_mock_do_something() {
     assertEquals "hello" "$actual"
 }
 
-test_mock_if_params_do_something() {
+test_if_params_are_ok_do_something() {
     mock myFunction if "greetings" do "echo hello"
 
     local actual=$(myFunction greetings)
@@ -63,7 +63,7 @@ test_mock_if_params_do_something() {
     assertEquals "hello" "$actual"
 }
 
-test_mock_if_params_wrong_do_nothing() {
+test_if_params_are_wrong_do_nothing() {
     mock ifFunction if "greetings" do "echo hello"
 
     local actual=$(ifFunction)
@@ -71,10 +71,16 @@ test_mock_if_params_wrong_do_nothing() {
     assertEquals "" "$actual"
 }
 
-test_mock_fails_with_wrong_params() {
-    failFunction() {
-        failCalled=true
-    }
+test_must_do_something_with_right_params() {
+    mock mustFunction must "greetings yeah" do "echo hello"
+
+    local actual=$(mustFunction greetings yeah)
+
+    assertEquals "hello" "$actual"
+}
+
+test_must_fails_with_wrong_params() {
+    failFunction() {failCalled=true;}
     mock_fail_function=failFunction
 
     mock mustFunction must "greetings yeah"
@@ -84,10 +90,8 @@ test_mock_fails_with_wrong_params() {
     assertTrue "$failCalled"
 }
 
-test_mock_fails_with_wrong_params_should_dont_do_anything() {
-    failFunction() {
-        failCalled=true
-    }
+test_must_do_nothing_with_wrong_params() {
+    failFunction() {failCalled=true;}
     mock_fail_function=failFunction
 
     mock mustFunction must "greetings yeah" do "echo hello"
@@ -97,15 +101,6 @@ test_mock_fails_with_wrong_params_should_dont_do_anything() {
     assertEquals "" "$actual"
     mock_fail_function=fail
 }
-
-test_mock_ok_with_right_params() {
-    mock mustFunction must "greetings yeah" do "echo hello"
-
-    local actual=$(mustFunction greetings yeah)
-
-    assertEquals "hello" "$actual"
-}
-
 
 # Run
 
