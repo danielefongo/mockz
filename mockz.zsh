@@ -5,10 +5,11 @@ typeset -gA __mocks_expectations=()
 typeset -gA __mocks_ifs=()
 typeset -gA __mocks_dos=()
 
-mock_fail_function=fail
+mockz_fail_function=fail
+mockz_debug=false
 
 function __USR1() {
-    $mock_fail_function
+    $mockz_fail_function
 }
 trap '__USR1' USR1
 
@@ -35,6 +36,7 @@ mock() {
 }
 
 rockall() {
+    __mockz_debug "deleting all mocks"
     for mockedFunction in $__mocks_functions
     do
         rock $mockedFunction
@@ -43,6 +45,7 @@ rockall() {
 
 rock() {
     local mockedFunction="$1"
+    __mockz_debug "deleting mock for $mockedFunction"
 
     eval "$__mocks_old_functions["$mockedFunction"]"
 
@@ -56,6 +59,7 @@ rock() {
 
 __mock_create() {
     local mockedFunction="$1"
+    __mockz_debug "creating mock for for $mockedFunction"
     
     __mocks_functions["$mockedFunction"]="$mockedFunction"
 
@@ -67,6 +71,7 @@ __mock_create() {
     eval """
     $mockedFunction()
     {
+        __mockz_debug \"executing mock $mockedFunction with params \$@\"
         __mock_invocations $mockedFunction
         __mock_expect $$ $mockedFunction \$@ || return
         __mock_if $mockedFunction \$@ || return
@@ -79,11 +84,13 @@ __mock_create() {
 
 __mock_invocations() {
     local mockedFunction="$1"
+    __mockz_debug "add invocation for $mockedFunction"
     __mocks_invocations["$mockedFunction"]=$((__mocks_invocations["$mockedFunction"] + 1 ))
 }
 
 __mock_do() {
     local mockedFunction="$1"
+    __mockz_debug "evaluating $mockedFunction"
     shift
 
     (
@@ -99,6 +106,7 @@ __mock_do() {
 
 __mock_if() {
     local mockedFunction="$1"
+    __mockz_debug "checking if for $mockedFunction"
     shift
 
     __mock_check_equality "$__mocks_ifs["$mockedFunction"]" "$@"
@@ -108,6 +116,7 @@ __mock_if() {
 __mock_expect() {
     local parentPid=$1
     local mockedFunction="$2"
+    __mockz_debug "checking expect for $mockedFunction"
     shift; shift
 
     __mock_check_equality "$__mocks_expectations["$mockedFunction"]" "$@"
@@ -119,11 +128,12 @@ __mock_expect() {
 
 __mock_check_invocations() {
     local mockedFunction="$1"
+    __mockz_debug "checking invocations for $mockedFunction"
     shift
 
     __mock_check_equality "$__mocks_invocations["$mockedFunction"]" "$@"
     if [ $? != 0 ]; then
-        $mock_fail_function
+        $mockz_fail_function
         return 1 
     fi
 }
@@ -138,6 +148,13 @@ __mock_check_equality() {
     fi
 
     if [ "$actual" != "$expected" ]; then
+        __mockz_debug "parameters wrong: $actual"
         return 1 
     fi
+
+    __mockz_debug "parameters ok: $actual"
+}
+
+__mockz_debug() {
+    [ $mockz_debug = false ] || echo "mockz: $@"
 }

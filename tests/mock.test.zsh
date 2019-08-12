@@ -124,7 +124,7 @@ test_do_returns_status_code_ko() {
 test_failure_should_rise_on_async_jobs() {
     local failCalled
     failFunction() {failCalled=true;}
-    mock_fail_function=failFunction
+    mockz_fail_function=failFunction
 
     mock myFunction expect 'expected'
 
@@ -162,7 +162,7 @@ test_expect_do_something_with_right_params() {
 test_expect_fails_with_wrong_params() {
     local failCalled
     failFunction() {failCalled=true;}
-    mock_fail_function=failFunction
+    mockz_fail_function=failFunction
 
     mock expectFunction expect "greetings yeah"
 
@@ -173,14 +173,14 @@ test_expect_fails_with_wrong_params() {
 
 test_expect_do_nothing_with_wrong_params() {
     failFunction() {;}
-    mock_fail_function=failFunction
+    mockz_fail_function=failFunction
 
     mock expectFunction expect "greetings yeah" do "echo hello"
 
     local actual=$(expectFunction greetings)
     
     assertEquals "" "$actual"
-    mock_fail_function=fail
+    mockz_fail_function=fail
 }
 
 test_called_the_right_number_of_times() {
@@ -194,7 +194,7 @@ test_called_the_right_number_of_times() {
 
 test_called_the_wrong_number_of_times() {
     failFunction() {failCalled=true;}
-    mock_fail_function=failFunction
+    mockz_fail_function=failFunction
 
     mock myFunction
 
