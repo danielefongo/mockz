@@ -17,7 +17,7 @@ mock() {
     shift
 
     (( $# % 2 != 0 )) && echo "wrong number of parameters" && return 1
-    (( $# == 0 )) && __mock_create $mockedFunction && return 1
+    (( $# == 0 )) && __mock_create $mockedFunction && return 0
 
     local command=$1
     local params="$2"
