@@ -6,7 +6,7 @@ setopt shwordsplit
 SHUNIT_PARENT=$0
 
 setUp() {  
-  source mock.zsh
+  source mockz.zsh
 }
 
 tearDown() {  
