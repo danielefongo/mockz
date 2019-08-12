@@ -78,6 +78,7 @@ __mock_create() {
 }
 
 __mock_invocations() {
+    local mockedFunction="$1"
     __mocks_invocations["$mockedFunction"]=$((__mocks_invocations["$mockedFunction"] + 1 ))
 }
 
