@@ -28,7 +28,7 @@ mock() {
         expect) __mocks_expectations["$mockedFunction"]="$params";;
         if) __mocks_ifs["$mockedFunction"]="$params";;
         do) __mocks_dos["$mockedFunction"]="$params";;
-        called) __mock_check_invocations $mockedFunction "$params" || return 1;;
+        called) __mock_check_invocations $mockedFunction "$params" && return;;
         *) echo "wrong command $command"; return 1;;
     esac
 

@@ -193,13 +193,14 @@ test_called_the_right_number_of_times() {
 }
 
 test_called_the_wrong_number_of_times() {
+    local failCalled
     failFunction() {failCalled=true;}
     mockz_fail_function=failFunction
 
     mock myFunction
 
     mock myFunction called 1
-    [ $? != 0 ] || fail
+    assertTrue "$failCalled"
 }
 
 # Run
