@@ -50,12 +50,12 @@ rock() {
     unset -f $mockedFunction
     eval "$__mocks_old_functions["$mockedFunction"]"
 
-    [ "$__mocks_functions["$mockedFunction"]" ] && __mocks_functions["$mockedFunction"]=""
-    [ "$__mocks_old_functions["$mockedFunction"]" ] && __mocks_old_functions["$mockedFunction"]=""
-    [ "$__mocks_invocations["$mockedFunction"]}" != 0 ] && __mocks_invocations["$mockedFunction"]=""
-    [ "$__mocks_dos["$mockedFunction"]" ] && __mocks_dos["$mockedFunction"]=""
-    [ "$__mocks_ifs["$mockedFunction"]" ] && __mocks_ifs["$mockedFunction"]=""
-    [ "$__mocks_expectations["$mockedFunction"]" ] && __mocks_expectations["$mockedFunction"]=""
+    [ -z "$__mocks_functions["$mockedFunction"]" ] || __mocks_functions["$mockedFunction"]=""
+    [ -z "$__mocks_old_functions["$mockedFunction"]" ] || __mocks_old_functions["$mockedFunction"]=""
+    [ "$__mocks_invocations["$mockedFunction"]}" = 0 ] || __mocks_invocations["$mockedFunction"]=""
+    [ -z "$__mocks_dos["$mockedFunction"]" ] || __mocks_dos["$mockedFunction"]=""
+    [ -z "$__mocks_ifs["$mockedFunction"]" ] || __mocks_ifs["$mockedFunction"]=""
+    [ -z "$__mocks_expectations["$mockedFunction"]" ] || __mocks_expectations["$mockedFunction"]=""
 }
 
 __mock_create() {

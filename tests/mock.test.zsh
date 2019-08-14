@@ -61,6 +61,7 @@ test_delete_mock() {
 
     rock myFunction
 
+    assertEquals "0" "$?"
     assertNull "$__mocks_functions[\"myFunction\"]"
     assertNull "$__mocks_invocations[\"myFunction\"]"
     assertNull "$__mocks_old_functions[\"myFunction\"]"
