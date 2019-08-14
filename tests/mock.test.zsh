@@ -70,6 +70,12 @@ test_delete_mock() {
     assertNull "$__mocks_dos[\"myFunction\"]"
 }
 
+test_delete_not_existing_mock() {
+    rock myFunction
+
+    assertEquals "0" "$?"
+}
+
 test_delete_mocks() {
     mock myFunction
     mock myFunction2
