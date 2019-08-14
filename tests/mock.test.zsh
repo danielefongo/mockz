@@ -26,6 +26,22 @@ test_create_mocks() {
     assertEquals "0" "$__mocks_invocations[\"myFunction\"]"
 }
 
+test_create_mocks_for_system_command() {
+    actualdir=$(pwd)
+    mkdir -p foo
+    cd foo
+
+    mock cd
+
+    assertEquals "cd" "$__mocks_functions[\"cd\"]"
+
+    rock cd
+    cd ..
+    rm -rf foo
+
+    assertEquals "$actualdir" "$(pwd)"
+}
+
 test_do_not_create_mock_with_wrong_command() {
     mock myFunction wtf hello 1>/dev/null
 

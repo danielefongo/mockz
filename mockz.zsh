@@ -47,6 +47,7 @@ rock() {
     local mockedFunction="$1"
     __mockz_debug "deleting mock for $mockedFunction"
 
+    unset -f $mockedFunction
     eval "$__mocks_old_functions["$mockedFunction"]"
 
     [ "$__mocks_functions["$mockedFunction"]" ] && __mocks_functions["$mockedFunction"]=""
