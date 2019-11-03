@@ -166,6 +166,14 @@ test_if_params_are_ok_do_something() {
     assertEquals "hello" "$actual"
 }
 
+test_if_params_match_regex_do_something() {
+    mock myFunction if "gree.*gs" do "echo hello"
+
+    local actual=$(myFunction greetings)
+
+    assertEquals "hello" "$actual"
+}
+
 test_if_params_are_wrong_do_nothing() {
     mock ifFunction if "greetings" do "echo hello"
 

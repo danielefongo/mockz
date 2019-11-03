@@ -148,12 +148,14 @@ __mock_check_equality() {
         return
     fi
 
-    if [ "$actual" != "$expected" ]; then
-        __mockz_debug "parameters wrong: $actual"
-        return 1 
+    if [[ "$actual" =~ "$expected" ]]; then
+        return 0
+        __mockz_debug "parameters ok: $actual"
     fi
+    
+    __mockz_debug "parameters wrong: $actual"
+    return 1 
 
-    __mockz_debug "parameters ok: $actual"
 }
 
 __mockz_debug() {
